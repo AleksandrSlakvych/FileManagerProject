@@ -37,7 +37,25 @@ namespace FileManager
             view.Copy += View_Copy;
             view.Cut += View_Cut;
             view.Paste += View_Paste;
-            view.Find += View_Find;
+            //view.Find += View_Find;
+            view.Find += View_Find1;
+        }
+
+        private void View_Find1(object sender, EventArgs e)
+        {
+            var listView = (ListView)sender;
+            string request = UserVoid();
+
+            if (request.Length == 0)
+                return;
+
+            List<object> fileRez = ListViewItem.FindListOfFiles(new DirectoryInfo(listView.CurrentState.ToString()), request);
+            List<object> dirRez = ListViewItem.FindListOfDirectories(new DirectoryInfo(listView.CurrentState.ToString()), request);
+
+            Console.SetCursorPosition(1, 25);
+            Console.WriteLine("                                                                                               ");
+            listView.Clean();
+            listView.Items = GetItems(view.CurrentState.ToString());
         }
 
         private void View_Find(object sender, EventArgs e)
@@ -45,11 +63,11 @@ namespace FileManager
             var listView = (ListView)sender;
 
             if (listView.Items.Count == 0)
-                throw new InvalidOperationException("There is no items in this directory");
+                throw new InvalidOperationException("NO ITEMS");
             string folderName = UserVoid();
             listView.FindElement(folderName);
             if (listView.Items.Count == 0)
-                throw new InvalidOperationException("File not found(");
+                throw new InvalidOperationException("DON'T FIND FILE");
 
             Console.SetCursorPosition(1, 25);
             Console.WriteLine("                                                                                               ");
@@ -106,16 +124,11 @@ namespace FileManager
             {
                 var from = new DirectoryInfo(fileComander.Info.FullName.ToString());
                 var to = new DirectoryInfo(path);
-
-                foreach (var file in from.GetFiles())
-                    File.Move(file.FullName, to.FullName + "\\" + file.Name);
-                foreach (var dirInfo in from.GetDirectories())
-                    Directory.Move(dirInfo.FullName, to.FullName + "\\" + dirInfo.Name);
+                from.MoveTo(to.FullName + "\\" + from.Name);
             }
             listView.Clean();
             listView.Items = GetItems(view.CurrentState.ToString());
         }
-
 
         private void View_Root2(object sender, EventArgs e)
         {
@@ -138,11 +151,13 @@ namespace FileManager
             var view = (ListView)sender;
             var info = view.SelectedItem.State;
             string folderName = UserVoid();
+
             if (info is FileInfo file)
             {
                 string newFileFullPath = Path.Combine(file.DirectoryName, folderName);
                 File.Move(file.FullName, newFileFullPath);
             }
+
             else if (info is DirectoryInfo dir)
             {
                 string newDirFullPath = Path.Combine(dir.Parent.FullName, folderName);
@@ -173,7 +188,6 @@ namespace FileManager
         private void FileProperty(object info)
         {
             var file = info as FileInfo;
-
             Console.WriteLine("=".PadRight(Console.WindowWidth - 1, '='));
             Console.WriteLine(String.Format("{0,-30}{1,-50}", "Name: ", file.Name).PadRight(Console.WindowWidth - 1, ' '));
             Console.WriteLine(String.Format("{0,-30}{1,-80}", "Parent Directory: ", file.Directory).PadRight(Console.WindowWidth - 1, ' '));
@@ -189,7 +203,6 @@ namespace FileManager
         private void FolderProperty(object info)
         {
             var dir = info as DirectoryInfo;
-
             Console.WriteLine("=".PadRight(Console.WindowWidth - 1, '='));
             Console.WriteLine(String.Format("{0,-30}{1,-50}", "Name: ", dir.Name).PadRight(Console.WindowWidth - 1, ' '));
             Console.WriteLine(String.Format("{0,-30}{1,-80}", "Root Directory: ", dir.FullName).PadRight(Console.WindowWidth - 1, ' '));
@@ -244,7 +257,6 @@ namespace FileManager
             Console.SetCursorPosition(12, 25);
             string userInput = Console.ReadLine();
             return userInput;
-
         }
 
         private static void View_ListOfDiscs(object sender, EventArgs e)
@@ -323,7 +335,5 @@ namespace FileManager
             view.Items = GetItems(path);
             view.CurrentState = path;
         }
-
-       
     }
 }

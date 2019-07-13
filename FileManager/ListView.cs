@@ -9,7 +9,6 @@ namespace FileManager
 {
     class ListView
     {
-
         private int selectedIndex;
         private int prevSelectedIndex;
         private bool wasPainted;
@@ -29,17 +28,17 @@ namespace FileManager
             this.y = y;
         }
 
-        public void FindElement(string name)
+        public void FindElement(string nameoffile)
         {
             try
             {
-                string[] allFoundFiles = Directory.GetFiles(CurrentState.ToString(), name, SearchOption.AllDirectories);
+                string[] allFoundFiles = Directory.GetFiles(CurrentState.ToString(), nameoffile, SearchOption.AllDirectories);
                 Clean();
                 Items.Clear();
                 for (int i = 0; i < allFoundFiles.Length; i++)
                 {
                     object dc = new object();
-                    if (name.Contains("."))
+                    if (nameoffile.Contains("."))
                         Items.Add(new ListViewItem(dc, dc.ToString()));
                 }
             }
@@ -53,7 +52,7 @@ namespace FileManager
         {
             selectedIndex = prevSelectedIndex = 0;
             wasPainted = false;
-            for (int i = 0; i < Items.Count; i++)
+            for (int i = 0; i < Math.Min(height, Items.Count); i++)
             {
                 Console.CursorLeft = x;
                 Console.CursorTop = i + y;

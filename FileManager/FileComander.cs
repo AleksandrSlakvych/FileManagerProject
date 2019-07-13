@@ -14,7 +14,7 @@ namespace FileManager
         public void Start()
         {
             Console.CursorVisible = false;
-
+            Console.BackgroundColor = ConsoleColor.DarkBlue;
             ListViewWithPath[] pathedListView = new ListViewWithPath[2];
 
             for (int i = 0; i < pathedListView.Length; i++)

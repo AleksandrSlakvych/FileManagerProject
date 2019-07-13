@@ -30,14 +30,11 @@ namespace FileManager
             resultDirectory.countOfFiles = first.countOfFiles + second.countOfFiles;
             return resultDirectory;
         }
-        
     }
 
     class ListViewItem
     {
         private readonly string[] columns;
-
-
         public object State { get; set; }
 
         public ListViewItem(object state, params string[] columns)
