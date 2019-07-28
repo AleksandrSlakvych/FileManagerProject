@@ -62,6 +62,7 @@ namespace FileManager
 
         public void Render()
         {
+
             for (int i = 0; i < Math.Min(height, Items.Count); i++)
             {
                 int elementIndex = i + scroll;
@@ -77,15 +78,21 @@ namespace FileManager
                 var saveBackground = Console.BackgroundColor;
                 if (elementIndex == selectedIndex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    if (Focused)
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    else
+                        Console.ForegroundColor = ConsoleColor.DarkGreen;
+
                     Console.BackgroundColor = ConsoleColor.White;
 
                 }
                 Console.CursorLeft = x;
                 Console.CursorTop = i + y;
+
                 item.Render(ColumnsWidth, i, x, y);
-                Console.ForegroundColor = saveForeground;
+
                 Console.BackgroundColor = saveBackground;
+                Console.ForegroundColor = saveForeground;
             }
             wasPainted = true;
         }

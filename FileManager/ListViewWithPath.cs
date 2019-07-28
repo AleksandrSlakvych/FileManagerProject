@@ -37,7 +37,6 @@ namespace FileManager
             view.Copy += View_Copy;
             view.Cut += View_Cut;
             view.Paste += View_Paste;
-            //view.Find += View_Find;
             view.Find += View_Find1;
         }
 
@@ -49,25 +48,8 @@ namespace FileManager
             if (request.Length == 0)
                 return;
 
-            List<object> fileRez = ListViewItem.FindListOfFiles(new DirectoryInfo(listView.CurrentState.ToString()), request);
-            List<object> dirRez = ListViewItem.FindListOfDirectories(new DirectoryInfo(listView.CurrentState.ToString()), request);
-
-            Console.SetCursorPosition(1, 25);
-            Console.WriteLine("                                                                                               ");
-            listView.Clean();
-            listView.Items = GetItems(view.CurrentState.ToString());
-        }
-
-        private void View_Find(object sender, EventArgs e)
-        {
-            var listView = (ListView)sender;
-
-            if (listView.Items.Count == 0)
-                throw new InvalidOperationException("NO ITEMS");
-            string folderName = UserVoid();
-            listView.FindElement(folderName);
-            if (listView.Items.Count == 0)
-                throw new InvalidOperationException("DON'T FIND FILE");
+            List<FileInfo> fileRez = ListViewFunc.FindListOfFiles(new DirectoryInfo(listView.CurrentState.ToString()), request);
+            List<DirectoryInfo> dirRez = ListViewFunc.FindListOfDirectories(new DirectoryInfo(listView.CurrentState.ToString()), request);
 
             Console.SetCursorPosition(1, 25);
             Console.WriteLine("                                                                                               ");
@@ -85,8 +67,7 @@ namespace FileManager
         {
             if (fileComander.Info is FileInfo)
             {
-                var copyinfo = new FileInfo(copInfo);
-                var frominfo = fileComander.Info.FullName.ToString();
+                string frominfo = fileComander.Info.FullName.ToString();
                 File.Copy(frominfo, copInfo + "\\" + itemInfo);
             }
             else if (fileComander.Info is DirectoryInfo)
@@ -116,8 +97,7 @@ namespace FileManager
             string path = listView.CurrentState.ToString();
             if (fileComander.Info is FileInfo)
             {
-                var copyinfo = new FileInfo(path);
-                var frominfo = fileComander.Info.FullName.ToString();
+                string frominfo = fileComander.Info.FullName.ToString();
                 File.Move(frominfo, path + "\\" + fileComander.Info.Name.ToString());
             }
             else if (fileComander.Info is DirectoryInfo)
@@ -187,7 +167,7 @@ namespace FileManager
 
         private void FileProperty(object info)
         {
-            var file = info as FileInfo;
+            var file = (FileInfo)info;
             Console.WriteLine("=".PadRight(Console.WindowWidth - 1, '='));
             Console.WriteLine(String.Format("{0,-30}{1,-50}", "Name: ", file.Name).PadRight(Console.WindowWidth - 1, ' '));
             Console.WriteLine(String.Format("{0,-30}{1,-80}", "Parent Directory: ", file.Directory).PadRight(Console.WindowWidth - 1, ' '));
@@ -202,7 +182,7 @@ namespace FileManager
 
         private void FolderProperty(object info)
         {
-            var dir = info as DirectoryInfo;
+            var dir = (DirectoryInfo)info;
             Console.WriteLine("=".PadRight(Console.WindowWidth - 1, '='));
             Console.WriteLine(String.Format("{0,-30}{1,-50}", "Name: ", dir.Name).PadRight(Console.WindowWidth - 1, ' '));
             Console.WriteLine(String.Format("{0,-30}{1,-80}", "Root Directory: ", dir.FullName).PadRight(Console.WindowWidth - 1, ' '));
@@ -214,24 +194,6 @@ namespace FileManager
             Console.WriteLine(String.Format("{0,-30}{1,-80}", "Folders: ", dir.GetDirectories().Length).PadRight(Console.WindowWidth - 1, ' '));
             Console.WriteLine("=".PadRight(Console.WindowWidth - 1, '='));
             Console.ReadKey();
-        }
-
-        private void View_Root(object sender, EventArgs e)
-        {
-            var listView = (ListView)sender;
-            string path = listView.CurrentState.ToString();
-            listView.Clean();
-            if (path.Contains("C:\\"))
-                view.CurrentState = "C:\\";
-            else if (path.Contains("D:\\"))
-                view.CurrentState = "D:\\";
-            else if (path.Contains("E:\\"))
-                view.CurrentState = "E:\\";
-            else if (path.Contains("F:\\"))
-                view.CurrentState = "F:\\";
-            else if (path.Contains("G:\\"))
-                view.CurrentState = "G:\\";
-            listView.Items = GetItems(listView.CurrentState.ToString());
         }
 
         private void View_NewFolder(object sender, EventArgs e)
@@ -284,8 +246,8 @@ namespace FileManager
              new ListViewItem(
                  f,
                  f.Name,
-                 f is DirectoryInfo dir ? "<dir>" : f.Extension,
-                 f is FileInfo file ? ListViewItem.GetSizeofFile(file) : " ")).ToList();
+                 f is DirectoryInfo ? "<dir>" : f.Extension,
+                 f is FileInfo file ? ListViewFunc.GetSizeofFile(file) : " ")).ToList();
         }
 
         internal void Render()
@@ -294,6 +256,7 @@ namespace FileManager
             Console.CursorLeft = x;
             Console.WriteLine(currentFolder.FullName.PadRight(view.ColumnsWidth.Sum()));
             view.Render();
+
         }
 
         internal void Update(ConsoleKeyInfo key)
@@ -320,7 +283,9 @@ namespace FileManager
                 }
                 catch
                 {
-
+                    Lines.TableDraw(0, 26, 104, 1);
+                    Console.SetCursorPosition(1, 25);
+                    Console.WriteLine("CAN'T OPEN FILE");
                 }
             }
         }
@@ -334,6 +299,24 @@ namespace FileManager
             view.Clean();
             view.Items = GetItems(path);
             view.CurrentState = path;
+            var dir = (DirectoryInfo)view.SelectedItem.State;
+            currentFolder = dir.Parent;
+            Render();
+        }
+
+        public void Active ()
+        {
+            view.Focused = true;
+            Lines.TableDraw(0 , 1, 52, 22, ConsoleColor.DarkYellow);
+            Lines.TableDraw(52, 1, 52, 22, ConsoleColor.Green);
+        }
+
+        public void DeActive()
+        {
+            view.Focused = false;
+            Lines.TableDraw(52, 1, 52, 22, ConsoleColor.DarkYellow);
+            Lines.TableDraw(0, 1, 52, 22, ConsoleColor.Green);
+
         }
     }
 }

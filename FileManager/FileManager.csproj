@@ -45,6 +45,7 @@
     <Compile Include="FileComander.cs" />
     <Compile Include="InputOutput.cs" />
     <Compile Include="ListView.cs" />
+    <Compile Include="ListViewFunc.cs" />
     <Compile Include="ListViewItem.cs" />
     <Compile Include="ListViewWithPath.cs" />
     <Compile Include="Program.cs" />

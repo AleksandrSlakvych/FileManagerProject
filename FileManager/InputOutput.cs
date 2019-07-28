@@ -16,33 +16,11 @@ namespace FileManager
         public static string botL = "|-";
         public static string botR = "-|";
 
-        // отрисовка горизонтальной линии
-
-        public static void HorizontLineDraw(int x, int y, int length, ConsoleColor color = ConsoleColor.DarkYellow)
-        {
-            Console.ForegroundColor = color;
-            Console.SetCursorPosition(x, y);
-            Console.Write(new string(horizontal, length));
-        }
-
-        // отрисовка вертикальной линии
-
-        public static void VerticalLineDraw(int x, int y, int length, ConsoleColor color = ConsoleColor.DarkYellow)
-        {
-            Console.ForegroundColor = color;
-            for (int i = 0; i < length; i++)
-            {
-                Console.SetCursorPosition(x, y + i);
-                Console.Write(vertical);
-            }
-        }
-
         // отрисовка рамки
 
         public static void TableDraw(int x, int y, int width, int height, ConsoleColor color = ConsoleColor.DarkYellow)
         {
             Console.ForegroundColor = color;
-            Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.SetCursorPosition(x, y);
             Console.Write(topL);
             Console.Write(new string(horizontal, width - 4));

@@ -31,17 +31,20 @@ namespace FileManager
                 if (key.Key == ConsoleKey.LeftArrow)
                 {
                     currentIndex = 0;
+                    pathedListView[0].Active();
+                    pathedListView[1].DeActive();
                 }
                 else if (key.Key == ConsoleKey.RightArrow)
                 {
                     currentIndex = 1;
+                    pathedListView[0].DeActive();
+                    pathedListView[1].Active();
                 }
 
                 pathedListView[currentIndex].Update(key);
 
                 for (int i = 0; i < pathedListView.Length; i++)
                 {
-                    Lines.TableDraw(0 + 52 * i, 1, 52, 22);
                     pathedListView[i].Render();
                 }
 
